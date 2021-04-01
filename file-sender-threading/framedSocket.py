@@ -10,9 +10,10 @@ def sendMessage(socket, message):
 
 buffer = ""
         
-def recieveMessage(socket):
+def receiveMessage(socket):
     global buffer
-    buffer += socket.recv(100).decode()
+    if(buffer == ""):
+        buffer += socket.recv(100).decode()
     lenMsg = ""
 
     #split the buffer and length of message
@@ -27,13 +28,13 @@ def recieveMessage(socket):
         return ""
 
     #change data type to int for message length
-    intlenMsg = int(lenMsg)
-    
+    intlenMsg = int(lenMsg)    
     msg = ""
+    
     #add buffer message into actual msg to receive
     while((len(msg) < intlenMsg)):
+        if(len(buffer) == 0):
+            bufer = socket.recv(100).decode()
         msg += buffer[0]
-        if(len(buffer) == 1):
-            buffer = socket.recv(100).decode()
         buffer = buffer[1:]
     return msg
