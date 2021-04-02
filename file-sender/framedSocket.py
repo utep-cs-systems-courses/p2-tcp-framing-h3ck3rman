@@ -1,10 +1,9 @@
 
 def sendMessage(socket, message):
-    msglen = str(len(message))
-    #add msg length to message
-    msg = msglen.encode()+b":"+ message
+    msglen = str(len(message)) 
+    msg = msglen.encode()+b":"+ message # add msg length to message
     #send until message done
-    while len(msg):
+    while len(msg): # send until message done
         bytes = socket.send(msg)
         msg = msg[bytes:]
 
@@ -16,23 +15,19 @@ def receiveMessage(socket):
         buffer += socket.recv(100).decode()
     lenMsg = ""
 
-    #split the buffer and length of message
-    for i in range(len(buffer)):
+    for i in range(len(buffer)): # split the buffer and length of the message
         if buffer[i] == ":":
             buffer = buffer[i+1:]
             break
         lenMsg += buffer[i]
-
-    #if no length then return nothing
-    if(lenMsg == ""):
+        
+    if(lenMsg == ""): # if no length then return nothing
         return ""
 
-    #change data type to int for message length
-    intlenMsg = int(lenMsg)    
+    intlenMsg = int(lenMsg) # change data type to int for message length
     msg = ""
-    
-    #add buffer message into actual msg to receive
-    while((len(msg) < intlenMsg)):
+
+    while((len(msg) < intlenMsg)): # add buffer message into actual msg to receive
         if(len(buffer) == 0):
             bufer = socket.recv(100).decode()
         msg += buffer[0]

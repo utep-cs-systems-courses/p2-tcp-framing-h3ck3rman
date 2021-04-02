@@ -39,26 +39,26 @@ if s is None:
     print('could not open socket\n')
     sys.exit(1)
 
-framedSocket.sendMessage(s,sys.argv[0].encode())  # sent the mode, "Send", "Recv" later if needed
-framedSocket.sendMessage(s,serverFile.encode())   # sent the file name to be saved on server side
-response = framedSocket.receiveMessage(s)         # gets response from the server, "OK" or "NO"
+framedSocket.sendMessage(s,sys.argv[0].encode())  # "Send" input
+framedSocket.sendMessage(s,serverFile.encode())   # file name to be saved in server
+response = framedSocket.receiveMessage(s)         # gets response from the server
 if(response == "OK"):
     fd = os.open("./client/"+clientFile, os.O_RDONLY)
     next = 0
     limit = 0
-    sbuf = ""
-    ibut = ""
+    buf = ""
     message= ""
     while 1:
-        ibuf = os.read(fd, 100)
-        sbuf = ibuf.decode()
-        limit = len(sbuf)
+        buf = os.read(fd, 100).decode()
+        limit = len(buf)
         if limit == 0:
             break
-        message += sbuf 
-    framedSocket.sendMessage(s, message.encode())   # sends it to the server in the framed send
-    result = framedSocket.receiveMessage(s)                 # recieves a result of the transfer
-    print(result+"\n")                    # prints result, "SUCCESS" or "FAILURE WRITING FILE"
-else: 
-    print("File name already taken on server file\n")  # response was "NO"
+        message += buf   # string buffer adds to real message to be sent
+    framedSocket.sendMessage(s, message.encode())   # message sent through a framed socket
+    result = framedSocket.receiveMessage(s)      # recieves a result of the transfer
+    print(result+"\n")                    # prints success result
+elif (response == "NO"): 
+    print("File name already taken on server file\n")
+else:
+    print("File currently being written into\n")
 s.close()

@@ -25,11 +25,11 @@ s.listen(1)              # allow only one outstanding request
 # s is a factory for connected sockets
 
 while True:
-    conn, addr = s.accept() # wait until incoming connection request (and accept it)
+    conn, addr = s.accept() # wait until incoming connection request
     if os.fork() == 0:      # child becomes server
-        print("Connected by: %s %d\n"%addr)  # prints the connection
+        print("Connected by: %s %d\n"%addr)  # prints where connection comes from
         framedSocket.receiveMessage(conn)    # receives "Send"
-        filename = framedSocket.receiveMessage(conn)  # receives the name of the file to be written
+        filename = framedSocket.receiveMessage(conn)  # receives the name of the file to save
         if os.path.isfile("./server/"+filename): # checks if file already exists
             framedSocket.sendMessage(conn,b"NO")
         else:
@@ -38,7 +38,7 @@ while True:
                 fd = os.open("./server/"+filename, os.O_CREAT | os.O_WRONLY)
                 os.write(fd, framedSocket.receiveMessage(conn).encode())
                 os.close(fd)
-                framedSocket.sendMessage(conn,b"SUCCESS")          # success if successful
+                framedSocket.sendMessage(conn,b"SUCCESS")          # success
             except:
                 framedSocket.sendMessage(conn,b"FAILURE WRITING FILE")
         conn.shutdown(socket.SHUT_WR)
